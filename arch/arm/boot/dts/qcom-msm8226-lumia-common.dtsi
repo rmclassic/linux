@@ -30,6 +30,11 @@
 		#size-cells = <1>;
 		ranges;
 	};
+
+	aliases {
+		mmc0 = &sdhc_1; /* eMMC */
+		mmc1 = &sdhc_2; /* MicroSD */
+	};
 	
 	/*
 	* This device being a WP platform has a different
