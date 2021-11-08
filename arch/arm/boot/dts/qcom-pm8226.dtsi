@@ -23,5 +23,9 @@
 		reg = <0x1 SPMI_USID>;
 		#address-cells = <1>;
 		#size-cells = <0>;
+
+		pm8226_spmi_regulators: pm8226-regulators {
+			compatible = "qcom,pm8226-regulators";
+		};
 	};
 };
