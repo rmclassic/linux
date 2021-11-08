@@ -244,6 +244,26 @@
 };
 
 &tlmm {
+	touch_pins: touch {
+		irq {
+			pins = "gpio17";
+			function = "gpio";
+
+			drive-strength = <8>;
+			bias-pull-down;
+			input-enable;
+		};
+
+		reset {
+			pins = "gpio16";
+			function = "gpio";
+
+			drive-strength = <8>;
+			bias-disable;
+			output-high;
+		};
+	};
+	
 	gpio_keys_pin_a: gpio-keys-active {
 		pinmux {
 			function = "gpio";
