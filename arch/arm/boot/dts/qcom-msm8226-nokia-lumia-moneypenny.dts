@@ -40,3 +40,7 @@
 		};
 	};
 };
+
+&blsp1_i2c4 {
+	status = "disabled";
+};
