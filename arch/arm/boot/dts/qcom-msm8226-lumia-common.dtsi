@@ -35,6 +35,10 @@
 		mmc0 = &sdhc_1; /* eMMC */
 		mmc1 = &sdhc_2; /* MicroSD */
 	};
+
+	usb_vbus: extcon-usb-dummy {
+		compatible = "linux,extcon-usb-dummy";
+	};
 	
 	/*
 	* This device being a WP platform has a different
@@ -295,4 +299,16 @@
 			bias-pull-up;
 		};
 	};
+};
+
+&usb {
+	status = "okay";
+	extcon = <&usb_vbus>;
+	dr_mode = "peripheral";
+};
+
+&usb_hs_phy {
+	extcon = <&usb_vbus>;
+	v1p8-supply = <&pm8226_l10>;
+	v3p3-supply = <&pm8226_l20>;
 };
