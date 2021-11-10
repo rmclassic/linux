@@ -87,6 +87,11 @@
  	};
 };
 
+&pm8226_resin {
+	status = "okay";
+	linux,code = <KEY_VOLUMEDOWN>;
+};
+
 &rpm_requests {
 	pm8226-regulators {
 		compatible = "qcom,rpm-pm8226-regulators";
