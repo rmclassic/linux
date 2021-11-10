@@ -6,10 +6,25 @@
 /dts-v1/;
 
 #include "qcom-msm8226-lumia-common.dtsi"
+#include <dt-bindings/input/input.h>
 
 / {
 	model = "Nokia Lumia 830";
 	compatible = "lumia,tesla","qcom,msm8226";
+};
+
+&gpio_keys {
+	camera-snapshot {
+		label = "Camera Snapshot";
+		gpios = <&tlmm 107 GPIO_ACTIVE_HIGH>;
+		linux,code = <KEY_CAMERA>;
+	};
+
+	camera-focus {
+		label = "Camera Focus";
+		gpios = <&tlmm 108 GPIO_ACTIVE_HIGH>;
+		linux,code = <KEY_CAMERA_FOCUS>;
+	};
 };
 
 &blsp1_i2c1 {

@@ -243,7 +243,7 @@
 };
 
 &soc {
-	gpio-keys {
+	gpio_keys: gpio-keys {
 		compatible = "gpio-keys";
 
 		pinctrl-names = "default";
@@ -255,18 +255,6 @@
 			label = "Volume Up";
 			gpios = <&tlmm 106 GPIO_ACTIVE_HIGH>;
 			linux,code = <KEY_VOLUMEUP>;
-		};
-		
-		camera-snapshot {
-			label = "Camera Snapshot";
-			gpios = <&tlmm 107 GPIO_ACTIVE_HIGH>;
-			linux,code = <KEY_CAMERA>;
-		};
-
-		camera-focus {
-			label = "Camera Focus";
-			gpios = <&tlmm 108 GPIO_ACTIVE_HIGH>;
-			linux,code = <KEY_CAMERA_FOCUS>;
 		};
 	};
 };
