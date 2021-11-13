@@ -28,6 +28,7 @@ properties:
           - qcom,pm8018-gpio
           - qcom,pm8038-gpio
           - qcom,pm8058-gpio
+          - qcom,pm8110-gpio
           - qcom,pm8150-gpio
           - qcom,pm8150b-gpio
           - qcom,pm8350-gpio
@@ -111,6 +112,7 @@ $defs:
                  - gpio1-gpio6 for pm8018
                  - gpio1-gpio12 for pm8038
                  - gpio1-gpio40 for pm8058
+                 - gpio1-gpio4 for pm8110
                  - gpio1-gpio10 for pm8150 (holes on gpio2, gpio5,
                                             gpio7 and gpio8)
                  - gpio1-gpio12 for pm8150b (holes on gpio3, gpio4
