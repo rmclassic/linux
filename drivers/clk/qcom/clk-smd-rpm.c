@@ -1180,6 +1180,8 @@ static int rpm_smd_clk_probe(struct platform_device *pdev)
 	struct clk_smd_rpm **rpm_smd_clks;
 	const struct rpm_smd_clk_desc *desc;
 
+	struct device *dev = &pdev->dev;
+
 	rpm = dev_get_drvdata(pdev->dev.parent);
 	if (!rpm) {
 		dev_err(&pdev->dev, "Unable to retrieve handle to RPM\n");
@@ -1207,8 +1209,12 @@ static int rpm_smd_clk_probe(struct platform_device *pdev)
 		rpm_smd_clks[i]->rpm = rpm;
 
 		ret = clk_smd_rpm_handoff(rpm_smd_clks[i]);
-		if (ret)
-			goto err;
+
+		if (!of_device_is_compatible(dev->of_node, "qcom,rpmcc-msm8212")) {
+			if (ret)
+				goto err;
+		}
+
 	}
 
 	ret = clk_smd_rpm_enable_scaling(rpm);
