@@ -665,6 +665,8 @@
 			#reset-cells = <1>;
 			#power-domain-cells = <1>;
 			reg = <0xfc400000 0x4000>;
+			clocks = <&rpmcc RPM_SMD_CXO_D0>, <&sleep_clk>;
+			clock-names = "cxo", "sleep_clk";
 		};
 
 		tcsr: syscon@fd4a0000 {
