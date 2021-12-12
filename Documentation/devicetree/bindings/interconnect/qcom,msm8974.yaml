@@ -25,6 +25,12 @@ properties:
       - qcom,msm8974-ocmemnoc
       - qcom,msm8974-pnoc
       - qcom,msm8974-snoc
+      - qcom,msm8226-bimc
+      - qcom,msm8226-cnoc
+      - qcom,msm8226-mmssnoc
+      - qcom,msm8226-ocmemnoc
+      - qcom,msm8226-pnoc
+      - qcom,msm8226-snoc
 
   '#interconnect-cells':
     const: 1
