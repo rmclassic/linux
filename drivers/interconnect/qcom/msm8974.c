@@ -259,6 +259,20 @@ static struct msm8974_icc_desc msm8974_bimc = {
 	.num_nodes = ARRAY_SIZE(msm8974_bimc_nodes),
 };
 
+static struct msm8974_icc_node *msm8226_bimc_nodes[] = {
+	[BIMC_MAS_AMPSS_M0] = &mas_ampss_m0,
+	[BIMC_MAS_MSS_PROC] = &mas_mss_proc,
+	[BIMC_TO_MNOC] = &bimc_to_mnoc,
+	[BIMC_TO_SNOC] = &bimc_to_snoc,
+	[BIMC_SLV_EBI_CH0] = &slv_ebi_ch0,
+	[BIMC_SLV_AMPSS_L2] = &slv_ampss_l2,
+};
+
+static struct msm8974_icc_desc msm8226_bimc = {
+	.nodes = msm8226_bimc_nodes,
+	.num_nodes = ARRAY_SIZE(msm8226_bimc_nodes),
+};
+
 DEFINE_QNODE(mas_rpm_inst, MSM8974_CNOC_MAS_RPM_INST, 8, 45, -1);
 DEFINE_QNODE(mas_rpm_data, MSM8974_CNOC_MAS_RPM_DATA, 8, 46, -1);
 DEFINE_QNODE(mas_rpm_sys, MSM8974_CNOC_MAS_RPM_SYS, 8, 47, -1);
@@ -342,6 +356,48 @@ static struct msm8974_icc_desc msm8974_cnoc = {
 	.num_nodes = ARRAY_SIZE(msm8974_cnoc_nodes),
 };
 
+static struct msm8974_icc_node *msm8226_cnoc_nodes[] = {
+	[CNOC_MAS_RPM_INST] = &mas_rpm_inst,
+	[CNOC_MAS_RPM_DATA] = &mas_rpm_data,
+	[CNOC_MAS_RPM_SYS] = &mas_rpm_sys,
+	[CNOC_MAS_DEHR] = &mas_dehr,
+	[CNOC_MAS_QDSS_DAP] = &mas_qdss_dap,
+	[CNOC_MAS_SPDM] = &mas_spdm,
+	[CNOC_MAS_TIC] = &mas_tic,
+	[CNOC_SLV_CLK_CTL] = &slv_clk_ctl,
+	[CNOC_SLV_CNOC_MSS] = &slv_cnoc_mss,
+	[CNOC_SLV_SECURITY] = &slv_security,
+	[CNOC_SLV_TCSR] = &slv_tcsr,
+	[CNOC_SLV_TLMM] = &slv_tlmm,
+	[CNOC_SLV_CRYPTO_0_CFG] = &slv_crypto_0_cfg,
+	[CNOC_SLV_IMEM_CFG] = &slv_imem_cfg,
+	[CNOC_SLV_MESSAGE_RAM] = &slv_message_ram,
+	[CNOC_SLV_BIMC_CFG] = &slv_bimc_cfg,
+	[CNOC_SLV_BOOT_ROM] = &slv_boot_rom,
+	[CNOC_SLV_PMIC_ARB] = &slv_pmic_arb,
+	[CNOC_SLV_SPDM_WRAPPER] = &slv_spdm_wrapper,
+	[CNOC_SLV_DEHR_CFG] = &slv_dehr_cfg,
+	[CNOC_SLV_MPM] = &slv_mpm,
+	[CNOC_SLV_QDSS_CFG] = &slv_qdss_cfg,
+	[CNOC_SLV_RBCPR_CFG] = &slv_rbcpr_cfg,
+	[CNOC_SLV_RBCPR_QDSS_APU_CFG] = &slv_rbcpr_qdss_apu_cfg,
+	[CNOC_TO_SNOC] = &cnoc_to_snoc,
+	[CNOC_SLV_CNOC_MNOC_MMSS_CFG] = &slv_cnoc_mnoc_mmss_cfg,
+	[CNOC_SLV_CNOC_MNOC_CFG] = &slv_cnoc_mnoc_cfg,
+	[CNOC_SLV_PNOC_CFG] = &slv_pnoc_cfg,
+	[CNOC_SLV_SNOC_MPU_CFG] = &slv_snoc_mpu_cfg,
+	[CNOC_SLV_SNOC_CFG] = &slv_snoc_cfg,
+	[CNOC_SLV_PHY_APU_CFG] = &slv_phy_apu_cfg,
+	[CNOC_SLV_EBI1_PHY_CFG] = &slv_ebi1_phy_cfg,
+	[CNOC_SLV_RPM] = &slv_rpm,
+	[CNOC_SLV_SERVICE_CNOC] = &slv_service_cnoc,
+};
+
+static struct msm8974_icc_desc msm8226_cnoc = {
+	.nodes = msm8226_cnoc_nodes,
+	.num_nodes = ARRAY_SIZE(msm8226_cnoc_nodes),
+};
+
 DEFINE_QNODE(mas_graphics_3d, MSM8974_MNOC_MAS_GRAPHICS_3D, 16, 6, -1, MSM8974_MNOC_TO_BIMC);
 DEFINE_QNODE(mas_jpeg, MSM8974_MNOC_MAS_JPEG, 16, 7, -1, MSM8974_MNOC_TO_BIMC);
 DEFINE_QNODE(mas_mdp_port0, MSM8974_MNOC_MAS_MDP_PORT0, 16, 8, -1, MSM8974_MNOC_TO_BIMC);
@@ -395,6 +451,35 @@ static struct msm8974_icc_desc msm8974_mnoc = {
 	.num_nodes = ARRAY_SIZE(msm8974_mnoc_nodes),
 };
 
+static struct msm8974_icc_node *msm8226_mnoc_nodes[] = {
+	[MNOC_MAS_GRAPHICS_3D] = &mas_graphics_3d,
+	[MNOC_MAS_JPEG] = &mas_jpeg,
+	[MNOC_MAS_MDP_PORT0] = &mas_mdp_port0,
+	[MNOC_MAS_VIDEO_P0] = &mas_video_p0,
+	[MNOC_MAS_VFE] = &mas_vfe,
+	[MNOC_TO_CNOC] = &mnoc_to_cnoc,
+	[MNOC_TO_BIMC] = &mnoc_to_bimc,
+	[MNOC_SLV_CAMERA_CFG] = &slv_camera_cfg,
+	[MNOC_SLV_DISPLAY_CFG] = &slv_display_cfg,
+	[MNOC_SLV_OCMEM_CFG] = &slv_ocmem_cfg,
+	[MNOC_SLV_CPR_CFG] = &slv_cpr_cfg,
+	[MNOC_SLV_CPR_XPU_CFG] = &slv_cpr_xpu_cfg,
+	[MNOC_SLV_MISC_CFG] = &slv_misc_cfg,
+	[MNOC_SLV_MISC_XPU_CFG] = &slv_misc_xpu_cfg,
+	[MNOC_SLV_VENUS_CFG] = &slv_venus_cfg,
+	[MNOC_SLV_GRAPHICS_3D_CFG] = &slv_graphics_3d_cfg,
+	[MNOC_SLV_MMSS_CLK_CFG] = &slv_mmss_clk_cfg,
+	[MNOC_SLV_MMSS_CLK_XPU_CFG] = &slv_mmss_clk_xpu_cfg,
+	[MNOC_SLV_MNOC_MPU_CFG] = &slv_mnoc_mpu_cfg,
+	[MNOC_SLV_ONOC_MPU_CFG] = &slv_onoc_mpu_cfg,
+	[MNOC_SLV_SERVICE_MNOC] = &slv_service_mnoc,
+};
+
+static struct msm8974_icc_desc msm8226_mnoc = {
+	.nodes = msm8226_mnoc_nodes,
+	.num_nodes = ARRAY_SIZE(msm8226_mnoc_nodes),
+};
+
 DEFINE_QNODE(ocmem_noc_to_ocmem_vnoc, MSM8974_OCMEM_NOC_TO_OCMEM_VNOC, 16, 54, 78, MSM8974_OCMEM_SLV_OCMEM);
 DEFINE_QNODE(mas_jpeg_ocmem, MSM8974_OCMEM_MAS_JPEG_OCMEM, 16, 13, -1);
 DEFINE_QNODE(mas_mdp_ocmem, MSM8974_OCMEM_MAS_MDP_OCMEM, 16, 14, -1);
@@ -428,6 +513,18 @@ static struct msm8974_icc_node *msm8974_onoc_nodes[] = {
 static struct msm8974_icc_desc msm8974_onoc = {
 	.nodes = msm8974_onoc_nodes,
 	.num_nodes = ARRAY_SIZE(msm8974_onoc_nodes),
+};
+
+static struct msm8974_icc_node *msm8226_onoc_nodes[] = {
+	[OCMEM_VNOC_TO_SNOC] = &ocmem_vnoc_to_snoc,
+	[OCMEM_VNOC_TO_OCMEM_NOC] = &ocmem_vnoc_to_onoc,
+	[OCMEM_VNOC_MAS_GFX3D] = &mas_v_ocmem_gfx3d,
+	[OCMEM_SLV_OCMEM] = &slv_ocmem,
+};
+
+static struct msm8974_icc_desc msm8226_onoc = {
+	.nodes = msm8226_onoc_nodes,
+	.num_nodes = ARRAY_SIZE(msm8226_onoc_nodes),
 };
 
 DEFINE_QNODE(mas_pnoc_cfg, MSM8974_PNOC_MAS_PNOC_CFG, 8, 43, -1);
@@ -493,6 +590,35 @@ static struct msm8974_icc_desc msm8974_pnoc = {
 	.num_nodes = ARRAY_SIZE(msm8974_pnoc_nodes),
 };
 
+static struct msm8974_icc_node *msm8226_pnoc_nodes[] = {
+	[PNOC_MAS_PNOC_CFG] = &mas_pnoc_cfg,
+	[PNOC_MAS_SDCC_1] = &mas_sdcc_1,
+	[PNOC_MAS_SDCC_3] = &mas_sdcc_3,
+	[PNOC_MAS_SDCC_2] = &mas_sdcc_2,
+	[PNOC_MAS_BAM_DMA] = &mas_bam_dma,
+	[PNOC_MAS_USB_HSIC] = &mas_usb_hsic,
+	[PNOC_MAS_BLSP_1] = &mas_blsp_1,
+	[PNOC_MAS_USB_HS] = &mas_usb_hs,
+	[PNOC_TO_SNOC] = &pnoc_to_snoc,
+	[PNOC_SLV_SDCC_1] = &slv_sdcc_1,
+	[PNOC_SLV_SDCC_3] = &slv_sdcc_3,
+	[PNOC_SLV_SDCC_2] = &slv_sdcc_2,
+	[PNOC_SLV_BAM_DMA] = &slv_bam_dma,
+	[PNOC_SLV_USB_HSIC] = &slv_usb_hsic,
+	[PNOC_SLV_BLSP_1] = &slv_blsp_1,
+	[PNOC_SLV_USB_HS] = &slv_usb_hs,
+	[PNOC_SLV_PDM] = &slv_pdm,
+	[PNOC_SLV_PERIPH_APU_CFG] = &slv_periph_apu_cfg,
+	[PNOC_SLV_PNOC_MPU_CFG] = &slv_pnoc_mpu_cfg,
+	[PNOC_SLV_PRNG] = &slv_prng,
+	[PNOC_SLV_SERVICE_PNOC] = &slv_service_pnoc,
+};
+
+static struct msm8974_icc_desc msm8226_pnoc = {
+	.nodes = msm8226_pnoc_nodes,
+	.num_nodes = ARRAY_SIZE(msm8226_pnoc_nodes),
+};
+
 DEFINE_QNODE(mas_lpass_ahb, MSM8974_SNOC_MAS_LPASS_AHB, 8, 18, -1);
 DEFINE_QNODE(mas_qdss_bam, MSM8974_SNOC_MAS_QDSS_BAM, 8, 19, -1);
 DEFINE_QNODE(mas_snoc_cfg, MSM8974_SNOC_MAS_SNOC_CFG, 8, 20, -1);
@@ -548,6 +674,34 @@ static struct msm8974_icc_node *msm8974_snoc_nodes[] = {
 static struct msm8974_icc_desc msm8974_snoc = {
 	.nodes = msm8974_snoc_nodes,
 	.num_nodes = ARRAY_SIZE(msm8974_snoc_nodes),
+};
+
+static struct msm8974_icc_node *msm8226_snoc_nodes[] = {
+	[SNOC_MAS_LPASS_AHB] = &mas_lpass_ahb,
+	[SNOC_MAS_QDSS_BAM] = &mas_qdss_bam,
+	[SNOC_MAS_SNOC_CFG] = &mas_snoc_cfg,
+	[SNOC_TO_BIMC] = &snoc_to_bimc,
+	[SNOC_TO_CNOC] = &snoc_to_cnoc,
+	[SNOC_TO_PNOC] = &snoc_to_pnoc,
+	[SNOC_TO_OCMEM_VNOC] = &snoc_to_ocmem_vnoc,
+	[SNOC_MAS_CRYPTO_CORE0] = &mas_crypto_core0,
+	[SNOC_MAS_LPASS_PROC] = &mas_lpass_proc,
+	[SNOC_MAS_MSS] = &mas_mss,
+	[SNOC_MAS_MSS_NAV] = &mas_mss_nav,
+	[SNOC_MAS_OCMEM_DMA] = &mas_ocmem_dma,
+	[SNOC_MAS_WCSS] = &mas_wcss,
+	[SNOC_MAS_QDSS_ETR] = &mas_qdss_etr,
+	[SNOC_SLV_AMPSS] = &slv_ampss,
+	[SNOC_SLV_LPASS] = &slv_lpass,
+	[SNOC_SLV_WCSS] = &slv_wcss,
+	[SNOC_SLV_OCIMEM] = &slv_ocimem,
+	[SNOC_SLV_SERVICE_SNOC] = &slv_service_snoc,
+	[SNOC_SLV_QDSS_STM] = &slv_qdss_stm,
+};
+
+static struct msm8974_icc_desc msm8226_snoc = {
+	.nodes = msm8226_snoc_nodes,
+	.num_nodes = ARRAY_SIZE(msm8226_snoc_nodes),
 };
 
 static void msm8974_icc_rpm_smd_send(struct device *dev, int rsc_type,
@@ -759,6 +913,12 @@ static const struct of_device_id msm8974_noc_of_match[] = {
 	{ .compatible = "qcom,msm8974-ocmemnoc", .data = &msm8974_onoc},
 	{ .compatible = "qcom,msm8974-pnoc", .data = &msm8974_pnoc},
 	{ .compatible = "qcom,msm8974-snoc", .data = &msm8974_snoc},
+	{ .compatible = "qcom,msm8226-bimc", .data = &msm8226_bimc},
+	{ .compatible = "qcom,msm8226-cnoc", .data = &msm8226_cnoc},
+	{ .compatible = "qcom,msm8226-mmssnoc", .data = &msm8226_mnoc},
+	{ .compatible = "qcom,msm8226-ocmemnoc", .data = &msm8226_onoc},
+	{ .compatible = "qcom,msm8226-pnoc", .data = &msm8226_pnoc},
+	{ .compatible = "qcom,msm8226-snoc", .data = &msm8226_snoc},
 	{ },
 };
 MODULE_DEVICE_TABLE(of, msm8974_noc_of_match);
