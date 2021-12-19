@@ -128,6 +128,11 @@ properties:
 
       - items:
           - enum:
+              - microsoft,dempsey
+              - microsoft,makepeace
+              - microsoft,moneypenny
+              - microsoft,superman
+              - microsoft,tesla
               - samsung,s3ve3g
           - const: qcom,msm8226
 
