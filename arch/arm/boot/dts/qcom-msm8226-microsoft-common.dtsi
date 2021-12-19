@@ -216,3 +216,25 @@
 	vmmc-supply = <&pm8226_l18>;
 	vqmmc-supply = <&pm8226_l21>;
 };
+
+&tlmm {
+	touch_pins: touch {
+		irq {
+			pins = "gpio17";
+			function = "gpio";
+
+			drive-strength = <8>;
+			bias-pull-up;
+			input-enable;
+		};
+
+		reset {
+			pins = "gpio16";
+			function = "gpio";
+
+			drive-strength = <8>;
+			bias-disable;
+			output-high;
+		};
+	};
+};
