@@ -14,4 +14,10 @@
 	model = "Microsoft Lumia 630";
 	compatible = "nokia,moneypenny","qcom,msm8226";
 	chassis-type = "handset";
-}; 
+};
+
+&framebuffer0 {
+	width = <480>;
+	height = <854>;
+	stride = <(480 * 3)>;
+};
