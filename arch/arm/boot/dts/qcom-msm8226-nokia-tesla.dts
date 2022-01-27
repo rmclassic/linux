@@ -9,6 +9,7 @@
 /dts-v1/;
 
 #include "qcom-msm8226-nokia-common.dtsi"
+#include <dt-bindings/input/input.h>
 
 / {
 	model = "Nokia Lumia 830";
@@ -20,4 +21,18 @@
 	width = <720>;
 	height = <1280>;
 	stride = <(720 * 3)>;
+};
+
+&gpio_keys {
+	camera-snapshot {
+		label = "Camera Snapshot";
+		gpios = <&tlmm 107 GPIO_ACTIVE_LOW>;
+		linux,code = <KEY_CAMERA>;
+	};
+
+	camera-focus {
+		label = "Camera Focus";
+		gpios = <&tlmm 108 GPIO_ACTIVE_LOW>;
+		linux,code = <KEY_CAMERA_FOCUS>;
+	};
 };
