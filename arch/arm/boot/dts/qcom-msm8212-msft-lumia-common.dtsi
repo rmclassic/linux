@@ -193,3 +193,25 @@
 	v1p8-supply = <&pm8110_l10>;
 	v3p3-supply = <&pm8110_l20>;
 };
+
+&tlmm {
+	touch_pins: touch {
+		irq {
+			pins = "gpio1";
+			function = "gpio";
+
+			drive-strength = <8>;
+			bias-pull-down;
+			input-enable;
+		};
+
+		reset {
+			pins = "gpio0";
+			function = "gpio";
+
+			drive-strength = <8>;
+			bias-disable;
+			output-high;
+		};
+	};
+};
