@@ -8,6 +8,12 @@
  */
 #include "qcom-msm8212.dtsi"
 
+/ {
+	usb_vbus: extcon-usb-dummy {
+		compatible = "linux,extcon-usb-dummy";
+	};
+};
+
 &rpm_requests {
 	pm8110-regulators {
 		compatible = "qcom,rpm-pm8110-regulators";
@@ -173,4 +179,17 @@
 
 	vmmc-supply = <&pm8110_l18>;
 	vqmmc-supply = <&pm8110_l21>;
+};
+
+&usb {
+	status = "okay";
+	dr_mode = "peripheral";
+	extcon = <&usb_vbus>;
+};
+
+&usb_hs_phy {
+	extcon = <&usb_vbus>;
+
+	v1p8-supply = <&pm8110_l10>;
+	v3p3-supply = <&pm8110_l20>;
 };
