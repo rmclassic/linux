@@ -10,11 +10,44 @@
 
 #include "qcom-msm8226-nokia-common.dtsi"
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
 
 / {
 	model = "Nokia Lumia 830";
 	compatible = "nokia,tesla","qcom,msm8226";
 	chassis-type = "handset";
+
+	leds {
+		compatible = "gpio-leds";
+
+		torch {
+			gpios = <&tlmm 32 GPIO_ACTIVE_HIGH>;
+			color = <LED_COLOR_ID_WHITE>;
+			function = LED_FUNCTION_TORCH;
+			default-state = "off";
+		};
+
+		back {
+			gpios = <&pm8226_mpps 2 GPIO_ACTIVE_LOW>;
+			color = <LED_COLOR_ID_WHITE>;
+			function = LED_FUNCTION_INDICATOR;
+			default-state = "on";
+		};
+
+		home {
+			gpios = <&pm8226_mpps 4 GPIO_ACTIVE_LOW>;
+			color = <LED_COLOR_ID_WHITE>;
+			function = LED_FUNCTION_INDICATOR;
+			default-state = "on";
+		};
+
+		search {
+			gpios = <&pm8226_mpps 6 GPIO_ACTIVE_LOW>;
+			color = <LED_COLOR_ID_WHITE>;
+			function = LED_FUNCTION_INDICATOR;
+			default-state = "on";
+		};
+	};
 };
 
 &blsp1_i2c1 {
