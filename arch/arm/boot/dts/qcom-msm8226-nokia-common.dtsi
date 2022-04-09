@@ -238,6 +238,10 @@
 			regulator-min-microvolt = <2000000>;
 			regulator-max-microvolt = <3000000>;
 		};
+
+		pm8226_lvs1: lvs1 {
+			regulator-always-on; /* HACK: lvs1 is needed for CCI */
+		};
 	};
 };
 
