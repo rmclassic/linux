@@ -194,6 +194,31 @@
 			reg = <0xfd8c0000 0x6000>;
 		};
 
+
+		cci: cci@fda0c000 {
+			compatible = "qcom,msm8226-cci";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0xfda0c000 0x1000>;
+			interrupts = <GIC_SPI 50 IRQ_TYPE_EDGE_RISING>;
+			clocks = <&mmcc CAMSS_TOP_AHB_CLK>,
+				 <&mmcc CAMSS_CCI_CCI_AHB_CLK>,
+				 <&mmcc CAMSS_CCI_CCI_CLK>;
+			clock-names = "camss_top_ahb", "cci_ahb", "cci";
+
+			pinctrl-names = "default";
+			pinctrl-0 = <&cci0_default>;
+
+			status = "disabled";
+
+			cci_i2c0: i2c-bus@0 {
+				reg = <0>;
+				clock-frequency = <400000>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+			};
+		};
+
 		sdhc_1: sdhci@f9824900 {
 			compatible = "qcom,msm8226-sdhci", "qcom,sdhci-msm-v4";
 			reg = <0xf9824900 0x11c>, <0xf9824000 0x800>;
@@ -413,6 +438,14 @@
 				pins = "gpio18", "gpio19";
 				function = "blsp_i2c5";
 				drive-strength = <2>;
+				bias-disable;
+			};
+
+			cci0_default: cci0-default {
+				pins = "gpio29", "gpio30";
+				function = "cci_i2c0";
+
+				drive-strength = <16>;
 				bias-disable;
 			};
 
