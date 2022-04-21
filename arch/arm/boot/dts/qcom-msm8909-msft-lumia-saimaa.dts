@@ -1,0 +1,54 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) 2022, The Linux Foundation. All rights reserved.
+ */
+
+#include "qcom-msm8909.dtsi"
+
+/ {
+	model = "Microsoft Lumia 550";
+	compatible = "microsoft,saimaa", "qcom,msm8909";
+	
+	aliases {
+		display0 = &framebuffer0;
+	};
+	
+	chosen {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		stdout-path = "display0";
+		
+		framebuffer0: framebuffer@83200000 {
+			compatible = "simple-framebuffer";
+			reg = <0x83200000 0x800000>;
+			format = "r8g8b8";
+		};
+	};
+	
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+		
+		display_reserved: framebuffer@83200000 {
+			reg = <0x83200000 0x800000>;
+			no-map;
+		};
+	};
+};
+
+&framebuffer0 {
+	width = <720>;
+	height = <1280>;
+	stride = <(720 * 4)>;
+};
+
+&sdhc_1 {
+	status = "okay";
+};
+
+&sdhc_2 {
+	status = "okay";
+};
