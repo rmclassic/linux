@@ -1,0 +1,1 @@
+source "drivers/platform/msm/spmi/Kconfig"

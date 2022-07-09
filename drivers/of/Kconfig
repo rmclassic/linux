@@ -94,4 +94,11 @@ config OF_DMA_DEFAULT_COHERENT
 	# arches should select this if DMA is coherent by default for OF devices
 	bool
 
+config OF_SPMI
+	def_tristate SPMI
+	depends on SPMI
+	help
+	  OpenFirmware SPMI bus accessors
+
+
 endif # OF

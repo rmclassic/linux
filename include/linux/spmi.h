@@ -30,17 +30,77 @@
 #define SPMI_CMD_READ			0x60
 #define SPMI_CMD_ZERO_WRITE		0x80
 
+
 /**
- * struct spmi_device - Basic representation of an SPMI device
- * @dev:	Driver model representation of the device.
- * @ctrl:	SPMI controller managing the bus hosting this device.
- * @usid:	This devices' Unique Slave IDentifier.
+ * struct spmi_resource: spmi_resource for one device_node
+ * @num_resources: number of resources for this device node
+ * @resources: array of resources for this device_node
+ * @of_node: device_node of the resource in question
+ * @label: name used to reference the device from the driver
+ *
+ * Note that we explicitly add a 'label' pointer here since per
+ * the ePAPR 2.2.2, the device_node->name should be generic and not
+ * reflect precise programming model. Thus label enables a
+ * platform specific name to be assigned with the 'label' binding to
+ * allow for unique query names.
+ */
+struct spmi_resource {
+	struct resource		*resource;
+	u32			num_resources;
+	struct device_node	*of_node;
+	const char		*label;
+};
+
+
+/**
+ * Client/device handle (struct spmi_device):
+ * ------------------------------------------
+ *  This is the client/device handle returned when a SPMI device
+ *  is registered with a controller.
+ *  Pointer to this structure is used by client-driver as a handle.
+ *  @dev: Driver model representation of the device.
+ *  @name: Name of driver to use with this device.
+ *  @ctrl: SPMI controller managing the bus hosting this device.
+ *  @res: SPMI resource for the primary node
+ *  @dev_node: array of SPMI resources when used with spmi-dev-container.
+ *  @num_dev_node: number of device_node structures.
+ *  @sid: Slave Identifier.
  */
 struct spmi_device {
 	struct device		dev;
+	const char		*name;
 	struct spmi_controller	*ctrl;
+	struct spmi_resource	res;
+	struct spmi_resource	*dev_node;
+	u32			num_dev_node;
+	union {
+	u8			sid;
 	u8			usid;
+	};
 };
+
+
+/**
+ * struct spmi_boardinfo: Declare board info for SPMI device bringup.
+ * @name: Name of driver to use with this device.
+ * @slave_id: slave identifier.
+ * @spmi_device: device to be registered with the SPMI framework.
+ * @of_node: pointer to the OpenFirmware device node.
+ * @res: SPMI resource for the primary node
+ * @dev_node: array of SPMI resources when used with spmi-dev-container.
+ * @num_dev_node: number of device_node structures.
+ * @platform_data: goes to spmi_device.dev.platform_data
+ */
+struct spmi_boardinfo {
+	char			name[SPMI_NAME_SIZE];
+	uint8_t			slave_id;
+	struct device_node	*of_node;
+	struct spmi_resource	res;
+	struct spmi_resource	*dev_node;
+	u32			num_dev_node;
+	const void		*platform_data;
+};
+
 
 static inline struct spmi_device *to_spmi_device(struct device *d)
 {
@@ -68,6 +128,17 @@ static inline void spmi_device_put(struct spmi_device *sdev)
 int spmi_device_add(struct spmi_device *sdev);
 
 void spmi_device_remove(struct spmi_device *sdev);
+
+/**
+ * spmi_new_device: Instantiates a new SPMI device
+ * @ctrl: controller to which this device is to be added to.
+ * @info: board information for this device.
+ *
+ * Returns the new device or NULL.
+ */
+extern struct spmi_device *spmi_new_device(struct spmi_controller *ctrl,
+					struct spmi_boardinfo const *info);
+
 
 /**
  * struct spmi_controller - interface to the SPMI master controller

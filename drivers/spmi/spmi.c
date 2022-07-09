@@ -56,6 +56,44 @@ static int spmi_device_match(struct device *dev, struct device_driver *drv)
 }
 
 /**
+ * spmi_new_device: Instantiates a new SPMI device
+ * @ctrl: controller to which this device is to be added to.
+ * @info: board information for this device.
+ *
+ * Returns the new device or NULL.
+ */
+struct spmi_device *spmi_new_device(struct spmi_controller *ctrl,
+					struct spmi_boardinfo const *info)
+{
+	struct spmi_device *spmidev;
+	int rc;
+
+	if (!ctrl || !info)
+		return NULL;
+
+	spmidev = spmi_device_alloc(ctrl);
+	if (!spmidev)
+		return NULL;
+
+	spmidev->name = info->name;
+	spmidev->sid  = info->slave_id;
+	spmidev->dev.of_node = info->of_node;
+	spmidev->dev.platform_data = (void *)info->platform_data;
+	spmidev->num_dev_node = info->num_dev_node;
+	spmidev->dev_node = info->dev_node;
+	spmidev->res = info->res;
+
+	rc = spmi_device_add(spmidev);
+	if (rc < 0) {
+		spmi_device_put(spmidev);
+		return NULL;
+	}
+
+	return spmidev;
+}
+EXPORT_SYMBOL_GPL(spmi_new_device);
+
+/**
  * spmi_device_add() - add a device previously constructed via spmi_device_alloc()
  * @sdev:	spmi_device to be added
  */

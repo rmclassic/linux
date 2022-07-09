@@ -2,6 +2,7 @@
 #ifndef __OF_IRQ_H
 #define __OF_IRQ_H
 
+struct of_irq;
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/irq.h>
@@ -31,7 +32,11 @@ static inline int of_irq_parse_oldworld(struct device_node *device, int index,
 	return -EINVAL;
 }
 #endif /* CONFIG_PPC32 && CONFIG_PPC_PMAC */
-
+extern int of_irq_map_raw(struct device_node *parent, const u32 *intspec,
+			  u32 ointsize, const u32 *addr,
+			  struct of_irq *out_irq);
+extern int of_irq_map_one(struct device_node *device, int index,
+			  struct of_irq *out_irq);
 extern int of_irq_parse_raw(const __be32 *addr, struct of_phandle_args *out_irq);
 extern unsigned int irq_create_of_mapping(struct of_phandle_args *irq_data);
 extern int of_irq_to_resource(struct device_node *dev, int index,
@@ -40,6 +45,22 @@ extern int of_irq_to_resource(struct device_node *dev, int index,
 extern void of_irq_init(const struct of_device_id *matches);
 
 #ifdef CONFIG_OF_IRQ
+/**
+ * of_irq - container for device_node/irq_specifier pair for an irq controller
+ * @controller: pointer to interrupt controller device tree node
+ * @size: size of interrupt specifier
+ * @specifier: array of cells @size long specifing the specific interrupt
+ *
+ * This structure is returned when an interrupt is mapped. The controller
+ * field needs to be put() after use
+ */
+#define OF_MAX_IRQ_SPEC		4 /* We handle specifiers of at most 4 cells */
+struct of_irq {
+	struct device_node *controller; /* Interrupt controller node */
+	u32 size; /* Specifier size */
+	u32 specifier[OF_MAX_IRQ_SPEC]; /* Specifier copy */
+};
+
 extern int of_irq_parse_one(struct device_node *device, int index,
 			  struct of_phandle_args *out_irq);
 extern int of_irq_count(struct device_node *dev);
