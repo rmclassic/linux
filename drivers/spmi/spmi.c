@@ -188,6 +188,7 @@ int spmi_register_read(struct spmi_device *sdev, u8 addr, u8 *buf)
 }
 EXPORT_SYMBOL_GPL(spmi_register_read);
 
+
 /**
  * spmi_ext_register_read() - extended register read
  * @sdev:	SPMI device.
@@ -231,6 +232,29 @@ int spmi_ext_register_readl(struct spmi_device *sdev, u16 addr, u8 *buf,
 			     buf, len);
 }
 EXPORT_SYMBOL_GPL(spmi_ext_register_readl);
+
+
+/**
+ * spmi_ext_register_readl_legacy() - extended register read long
+ * @sdev:	SPMI device.
+ * @addr:	slave register address (16-bit address).
+ * @buf:	buffer to be populated with data from the Slave.
+ * @len:	the request number of bytes to read (up to 8 bytes).
+ *
+ * Reads up to 8 bytes of data from the extended register space on a
+ * Slave device using 16-bit address.
+ */
+int spmi_ext_register_readl_legacy(struct spmi_controller *ctrl, u16 addr, u8 sid, u8 *buf,
+			    size_t len)
+{
+	/* 16-bit register address, up to 8 bytes */
+	if (len == 0 || len > 8)
+		return -EINVAL;
+
+	return spmi_read_cmd(ctrl, SPMI_CMD_EXT_READL, sid, addr,
+			     buf, len);
+}
+EXPORT_SYMBOL_GPL(spmi_ext_register_readl_legacy);
 
 /**
  * spmi_register_write() - register write
@@ -308,6 +332,28 @@ int spmi_ext_register_writel(struct spmi_device *sdev, u16 addr, const u8 *buf,
 			      addr, buf, len);
 }
 EXPORT_SYMBOL_GPL(spmi_ext_register_writel);
+
+/**
+ * spmi_ext_register_writel_legacy() - extended register write long
+ * @sdev:	SPMI device.
+ * @addr:	slave register address (16-bit address).
+ * @buf:	buffer containing the data to be transferred to the Slave.
+ * @len:	the request number of bytes to read (up to 8 bytes).
+ *
+ * Writes up to 8 bytes of data to the extended register space of a
+ * Slave device using 16-bit address.
+ */
+int spmi_ext_register_writel_legacy(struct spmi_controller *ctrl, u16 addr, u8 sid, const u8 *buf,
+			     size_t len)
+{
+	/* 4-bit Slave Identifier, 16-bit register address, up to 8 bytes */
+	if (len == 0 || len > 8)
+		return -EINVAL;
+
+	return spmi_write_cmd(ctrl, SPMI_CMD_EXT_WRITEL, sid,
+			      addr, buf, len);
+}
+EXPORT_SYMBOL_GPL(spmi_ext_register_writel_legacy);
 
 /**
  * spmi_command_reset() - sends RESET command to the specified slave

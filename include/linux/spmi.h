@@ -240,12 +240,16 @@ int spmi_ext_register_read(struct spmi_device *sdev, u8 addr, u8 *buf,
 			   size_t len);
 int spmi_ext_register_readl(struct spmi_device *sdev, u16 addr, u8 *buf,
 			    size_t len);
+int spmi_ext_register_readl_legacy(struct spmi_controller *ctrl, u16 addr, u8 sid, u8 *buf,
+size_t len);
 int spmi_register_write(struct spmi_device *sdev, u8 addr, u8 data);
 int spmi_register_zero_write(struct spmi_device *sdev, u8 data);
 int spmi_ext_register_write(struct spmi_device *sdev, u8 addr,
 			    const u8 *buf, size_t len);
 int spmi_ext_register_writel(struct spmi_device *sdev, u16 addr,
 			     const u8 *buf, size_t len);
+int spmi_ext_register_writel_legacy(struct spmi_controller *ctrl, u16 addr, u8 sid, const u8 *buf,
+size_t len);
 int spmi_command_reset(struct spmi_device *sdev);
 int spmi_command_sleep(struct spmi_device *sdev);
 int spmi_command_wakeup(struct spmi_device *sdev);

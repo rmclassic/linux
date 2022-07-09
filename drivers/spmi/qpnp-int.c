@@ -30,7 +30,7 @@
 
 #include <asm/irq.h>
 #include <asm/mach/irq.h>
-#include <mach/qpnp-int.h>
+#include "qpnp-int.h"
 
 /* 16 slave_ids, 256 per_ids per slave, and 8 ints per per_id */
 #define QPNPINT_NR_IRQS		(16 * 256 * 8)
@@ -125,7 +125,7 @@ static int qpnpint_spmi_read(struct q_irq_data *irq_d, uint8_t reg,
 	if (!chip_d->spmi_ctrl)
 		return -ENODEV;
 
-	return spmi_ext_register_readl(chip_d->spmi_ctrl, irq_d->spmi_slave,
+	return spmi_ext_register_readl_legacy(chip_d->spmi_ctrl, irq_d->spmi_slave,
 				       irq_d->spmi_offset + reg, buf, len);
 }
 
@@ -138,7 +138,7 @@ static int qpnpint_spmi_write(struct q_irq_data *irq_d, uint8_t reg,
 	if (!chip_d->spmi_ctrl)
 		return -ENODEV;
 
-	rc = spmi_ext_register_writel(chip_d->spmi_ctrl, irq_d->spmi_slave,
+	rc = spmi_ext_register_writel_legacy(chip_d->spmi_ctrl, irq_d->spmi_slave,
 				      irq_d->spmi_offset + reg, buf, len);
 	return rc;
 }
@@ -347,7 +347,7 @@ static struct irq_chip qpnpint_chip = {
 	.irq_mask_ack	= qpnpint_irq_mask_ack,
 	.irq_unmask	= qpnpint_irq_unmask,
 	.irq_set_type	= qpnpint_irq_set_type,
-	.irq_read_line	= qpnpint_irq_read_line,
+	//.irq_read_line	= qpnpint_irq_read_line,
 	.irq_set_wake	= qpnpint_irq_set_wake,
 	.flags		= IRQCHIP_MASK_ON_SUSPEND,
 };
@@ -435,7 +435,7 @@ static int qpnpint_irq_domain_dt_translate(struct irq_domain *d,
 	pr_debug("intspec[0] 0x%x intspec[1] 0x%x intspec[2] 0x%x\n",
 				intspec[0], intspec[1], intspec[2]);
 
-	if (d->of_node != controller)
+	if (d->dev->of_node != controller)
 		return -EINVAL;
 	if (intsize != 3)
 		return -EINVAL;
@@ -480,7 +480,7 @@ static int qpnpint_irq_domain_map(struct irq_domain *d,
 		return -EINVAL;
 	}
 
-	irq_radix_revmap_insert(d, virq, hwirq);
+	irq_domain_associate(d, virq, hwirq);
 
 	irq_d = qpnpint_alloc_irq_data(chip_d, hwirq);
 	if (IS_ERR(irq_d)) {
@@ -499,7 +499,7 @@ static int qpnpint_irq_domain_map(struct irq_domain *d,
 			handle_level_irq);
 	irq_set_chip_data(virq, irq_d);
 #ifdef CONFIG_ARM
-	set_irq_flags(virq, IRQF_VALID);
+	irq_clear_status_flags(virq, IRQ_NOREQUEST);
 #else
 	irq_set_noprobe(virq);
 #endif
@@ -536,7 +536,7 @@ int qpnpint_register_controller(struct device_node *node,
 		return -EINVAL;
 
 	list_for_each_entry(chip_d, &qpnpint_chips, list)
-		if (node == chip_d->domain->of_node) {
+		if (node == chip_d->domain->dev->of_node) {
 			chip_d->cb = kmemdup(li_cb,
 						sizeof(*li_cb), GFP_ATOMIC);
 			if (!chip_d->cb)
@@ -558,7 +558,7 @@ int qpnpint_unregister_controller(struct device_node *node)
 		return -EINVAL;
 
 	list_for_each_entry(chip_d, &qpnpint_chips, list)
-		if (node == chip_d->domain->of_node) {
+		if (node == chip_d->domain->dev->of_node) {
 			kfree(chip_d->cb);
 			chip_d->cb = NULL;
 			if (chip_d->spmi_ctrl)
@@ -592,7 +592,7 @@ int qpnpint_handle_irq(struct spmi_controller *spmi_ctrl,
 	}
 
 	domain = chip_lookup[busno]->domain;
-	irq = irq_radix_revmap_lookup(domain, hwirq);
+	__irq_resolve_mapping(domain, hwirq, &irq);
 
 	generic_handle_irq(irq);
 
