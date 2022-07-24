@@ -24,8 +24,10 @@
 #include <linux/rtc.h>
 #include <linux/delay.h>
 #include <linux/qpnp/qpnp-adc.h>
+#include <linux/wakelock.h>
 #include <linux/qpnp/power-on.h>
 #include <linux/mfd/pm8xxx/batterydata-lib.h>
+#include <uapi/linux/time.h>
 
 /* BMS Register Offsets */
 #define BMS1_REVISION1			0x0
@@ -134,6 +136,7 @@ struct bms_wakeup_source {
 };
 
 struct qpnp_bms_chip {
+	struct power_supply_desc psy_desc;
 	struct device			*dev;
 	struct power_supply		bms_psy;
 	bool				bms_psy_registered;
@@ -210,7 +213,7 @@ struct qpnp_bms_chip {
 	int				iavg_samples_ma[IAVG_SAMPLES];
 	int				iavg_index;
 	int				iavg_num_samples;
-	struct timespec			t_soc_queried;
+	struct timespec64			t_soc_queried;
 	int				last_soc;
 	int				last_soc_est;
 	int				last_soc_unbound;
@@ -279,9 +282,7 @@ static char *qpnp_bms_supplicants[] = {
 static enum power_supply_property msm_bms_power_props[] = {
 	POWER_SUPPLY_PROP_CAPACITY,
 	POWER_SUPPLY_PROP_CURRENT_NOW,
-	POWER_SUPPLY_PROP_RESISTANCE,
 	POWER_SUPPLY_PROP_CHARGE_COUNTER,
-	POWER_SUPPLY_PROP_CHARGE_COUNTER_SHADOW,
 	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
 	POWER_SUPPLY_PROP_CHARGE_FULL,
 	POWER_SUPPLY_PROP_CYCLE_COUNT,
@@ -298,7 +299,7 @@ static int qpnp_read_wrapper(struct qpnp_bms_chip *chip, u8 *val,
 	int rc;
 	struct spmi_device *spmi = chip->spmi;
 
-	rc = spmi_ext_register_readl(spmi->ctrl, spmi->sid, base, val, count);
+	rc = spmi_ext_register_readl_legacy(spmi->ctrl, spmi->sid, base, val, count);
 	if (rc) {
 		pr_err("SPMI read failed rc=%d\n", rc);
 		return rc;
@@ -312,7 +313,7 @@ static int qpnp_write_wrapper(struct qpnp_bms_chip *chip, u8 *val,
 	int rc;
 	struct spmi_device *spmi = chip->spmi;
 
-	rc = spmi_ext_register_writel(spmi->ctrl, spmi->sid, base, val, count);
+	rc = spmi_ext_register_readl_legacy(spmi->ctrl, spmi->sid, base, val, count);
 	if (rc) {
 		pr_err("SPMI write failed rc=%d\n", rc);
 		return rc;
@@ -724,7 +725,9 @@ static int get_battery_status(struct qpnp_bms_chip *chip)
 		chip->batt_psy = power_supply_get_by_name("battery");
 	if (chip->batt_psy) {
 		/* if battery has been registered, use the status property */
-		chip->batt_psy->get_property(chip->batt_psy,
+		//chip->batt_psy(chip->batt_psy,
+		//			POWER_SUPPLY_PROP_STATUS, &ret);
+		power_supply_get_property(chip->batt_psy,
 					POWER_SUPPLY_PROP_STATUS, &ret);
 		return ret.intval;
 	}
@@ -747,7 +750,7 @@ static bool is_battery_present(struct qpnp_bms_chip *chip)
 		chip->batt_psy = power_supply_get_by_name("battery");
 	if (chip->batt_psy) {
 		/* if battery has been registered, use the status property */
-		chip->batt_psy->get_property(chip->batt_psy,
+		power_supply_get_property(chip->batt_psy,
 					POWER_SUPPLY_PROP_PRESENT, &ret);
 		return ret.intval;
 	}
@@ -1335,7 +1338,7 @@ static int get_current_time(unsigned long *now_tm_sec)
 			CONFIG_RTC_HCTOSYS_DEVICE, rc);
 		goto close_time;
 	}
-	rtc_tm_to_time(&tm, now_tm_sec);
+	*now_tm_sec = (unsigned long int)rtc_tm_to_time64(&tm);
 
 close_time:
 	rtc_class_close(rtc);
@@ -1655,7 +1658,7 @@ static int report_cc_based_soc(struct qpnp_bms_chip *chip)
 	int soc, soc_change;
 	int time_since_last_change_sec, charge_time_sec = 0;
 	unsigned long last_change_sec;
-	struct timespec now;
+	struct timespec64 now;
 	struct qpnp_vadc_result result;
 	int batt_temp;
 	int rc;
@@ -3041,17 +3044,17 @@ static int qpnp_bms_power_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_CURRENT_NOW:
 		val->intval = get_prop_bms_current_now(chip);
 		break;
-	case POWER_SUPPLY_PROP_RESISTANCE:
-		val->intval = get_prop_bms_batt_resistance(chip);
-		break;
+	// case POWER_SUPPLY_PROP_RESISTANCE:
+	// 	val->intval = get_prop_bms_batt_resistance(chip);
+	// 	break;
 	case POWER_SUPPLY_PROP_CHARGE_COUNTER:
 		val->intval = get_prop_bms_charge_counter(chip);
 		break;
-	case POWER_SUPPLY_PROP_CHARGE_COUNTER_SHADOW:
-		val->intval = get_prop_bms_charge_counter_shadow(chip);
-		break;
+	// case POWER_SUPPLY_PROP_CHARGE_COUNTER_SHADOW:
+	// 	val->intval = get_prop_bms_charge_counter_shadow(chip);
+	// 	break;
 	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
-		val->intval = get_prop_bms_charge_full_design(chip);
+	val->intval = get_prop_bms_charge_full_design(chip);
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_FULL:
 		val->intval = get_prop_bms_charge_full(chip);
@@ -3209,21 +3212,21 @@ static int set_battery_data(struct qpnp_bms_chip *chip)
 	int64_t battery_id;
 	struct bms_battery_data *batt_data;
 
-	if (chip->batt_type == BATT_DESAY) {
-		batt_data = &desay_5200_data;
-	} else if (chip->batt_type == BATT_PALLADIUM) {
-		batt_data = &palladium_1500_data;
-	} else if (chip->batt_type == BATT_OEM) {
-		batt_data = &oem_batt_data;
-	} else if (chip->batt_type == BATT_QRD_4V35_2000MAH) {
-		batt_data = &QRD_4v35_2000mAh_data;
-	} else {
+	// if (chip->batt_type == BATT_DESAY) {
+	// 	batt_data = &desay_5200_data;
+	// } else if (chip->batt_type == BATT_PALLADIUM) {
+	// 	batt_data = &palladium_1500_data;
+	// } else if (chip->batt_type == BATT_OEM) {
+	// 	batt_data = &oem_batt_data;
+	// } else if (chip->batt_type == BATT_QRD_4V35_2000MAH) {
+	// 	batt_data = &QRD_4v35_2000mAh_data;
+	// } else {
 		battery_id = read_battery_id(chip);
 		if (battery_id < 0) {
 			pr_err("cannot read battery id err = %lld\n",
 							battery_id);
 			return battery_id;
-		}
+	//	}
 
 		if (is_between(PALLADIUM_ID_MIN, PALLADIUM_ID_MAX,
 							battery_id)) {
@@ -3613,11 +3616,15 @@ static int setup_die_temp_monitoring(struct qpnp_bms_chip *chip)
 	return 0;
 }
 
-static int __devinit qpnp_bms_probe(struct spmi_device *spmi)
+static int qpnp_bms_probe(struct spmi_device *spmi)
 {
+	struct power_supply_config psy_cfg = {};
 	struct qpnp_bms_chip *chip;
 	bool warm_reset;
 	int rc, vbatt;
+
+	pr_info("PROBING QPNP BMS!\n");
+	pr_err("PROBING QPNP BMS(err)\n");
 
 	chip = kzalloc(sizeof *chip, GFP_KERNEL);
 
@@ -3703,11 +3710,11 @@ static int __devinit qpnp_bms_probe(struct spmi_device *spmi)
 
 	bms_initialize_constants(chip);
 
-	wakeup_source_init(&chip->soc_wake_source.source, "qpnp_soc_wake");
-	wake_lock_init(&chip->low_voltage_wake_lock, WAKE_LOCK_SUSPEND,
-			"qpnp_low_voltage_lock");
-	wake_lock_init(&chip->cv_wake_lock, WAKE_LOCK_SUSPEND,
-			"qpnp_cv_lock");
+	//wakeup_source_init(&chip->soc_wake_source.source, "qpnp_soc_wake");
+	// wake_lock_init(&chip->low_voltage_wake_lock, WAKE_LOCK_SUSPEND,
+	// 		"qpnp_low_voltage_lock");
+	// wake_lock_init(&chip->cv_wake_lock, WAKE_LOCK_SUSPEND,
+	// 		"qpnp_cv_lock");
 	INIT_DELAYED_WORK(&chip->calculate_soc_delayed_work,
 			calculate_soc_work);
 	INIT_WORK(&chip->recalc_work, recalculate_work);
@@ -3753,17 +3760,18 @@ static int __devinit qpnp_bms_probe(struct spmi_device *spmi)
 	calculate_soc_work(&(chip->calculate_soc_delayed_work.work));
 
 	/* setup & register the battery power supply */
-	chip->bms_psy.name = "bms";
-	chip->bms_psy.type = POWER_SUPPLY_TYPE_BMS;
-	chip->bms_psy.properties = msm_bms_power_props;
-	chip->bms_psy.num_properties = ARRAY_SIZE(msm_bms_power_props);
-	chip->bms_psy.get_property = qpnp_bms_power_get_property;
-	chip->bms_psy.external_power_changed =
-		qpnp_bms_external_power_changed;
+	chip->psy_desc.name = "bms";
+	chip->psy_desc.type = POWER_SUPPLY_TYPE_BMS;
+	chip->psy_desc.properties = msm_bms_power_props;
+	chip->psy_desc.num_properties = ARRAY_SIZE(msm_bms_power_props);
+	chip->psy_desc.get_property = qpnp_bms_power_get_property;
+	chip->psy_desc.external_power_changed = qpnp_bms_external_power_changed;
+	chip->bms_psy.desc = &chip->psy_desc;
+	
 	chip->bms_psy.supplied_to = qpnp_bms_supplicants;
 	chip->bms_psy.num_supplicants = ARRAY_SIZE(qpnp_bms_supplicants);
 
-	rc = power_supply_register(chip->dev, &chip->bms_psy);
+	rc = power_supply_register(chip->dev, &chip->psy_desc, &psy_cfg);
 
 	if (rc < 0) {
 		pr_err("power_supply_register bms failed rc = %d\n", rc);
@@ -3795,7 +3803,7 @@ unregister_dc:
 	power_supply_unregister(&chip->bms_psy);
 error_setup:
 	dev_set_drvdata(&spmi->dev, NULL);
-	wakeup_source_trash(&chip->soc_wake_source.source);
+	wakeup_source_unregister(&chip->soc_wake_source.source);
 	wake_lock_destroy(&chip->low_voltage_wake_lock);
 	wake_lock_destroy(&chip->cv_wake_lock);
 error_resource:
@@ -3804,14 +3812,13 @@ error_read:
 	return rc;
 }
 
-static int __devexit
+static void
 qpnp_bms_remove(struct spmi_device *spmi)
 {
 	struct qpnp_bms_chip *chip = dev_get_drvdata(&spmi->dev);
 
 	dev_set_drvdata(&spmi->dev, NULL);
 	kfree(chip);
-	return 0;
 }
 
 static int bms_suspend(struct device *dev)
@@ -3862,7 +3869,7 @@ static const struct dev_pm_ops qpnp_bms_pm_ops = {
 
 static struct spmi_driver qpnp_bms_driver = {
 	.probe		= qpnp_bms_probe,
-	.remove		= __devexit_p(qpnp_bms_remove),
+	.remove		= qpnp_bms_remove,
 	.driver		= {
 		.name		= QPNP_BMS_DEV_NAME,
 		.owner		= THIS_MODULE,

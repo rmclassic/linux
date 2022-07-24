@@ -14,6 +14,7 @@
 #endif
 
 #include <linux/types.h>
+#include <linux/time.h>
 
 struct wake_irq;
 

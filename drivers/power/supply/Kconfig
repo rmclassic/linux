@@ -897,4 +897,21 @@ config BATTERY_UG3105
 	  device is off or suspended, the functionality of this driver is
 	  limited to reporting capacity only.
 
+config QPNP_BMS
+	tristate "QPNP Battery Monitoring System driver"
+	depends on SPMI
+	depends on MSM_QPNP_INT
+	help
+	  Say Y here to enable support for QPNP chip bms device.
+	  It registers a fuelgauge bms power supply to report
+	  State of Charge.
+
+config QPNP_REVID
+	tristate "QPNP Revision ID Peripheral"
+	depends on SPMI
+	help
+	  Say 'y' here to include support for the Qualcomm QPNP REVID
+	  peripheral. REVID prints out the PMIC type and revision numbers
+	  in the kernel log along with the PMIC option status. The PMIC
+	  type is mapped to a Qualcomm chip part number and logged as well.
 endif # POWER_SUPPLY

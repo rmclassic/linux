@@ -1,0 +1,1 @@
+obj-$(CONFIG_QPNP_BMS) += batterydata-lib.o

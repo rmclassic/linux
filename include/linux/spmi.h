@@ -255,4 +255,24 @@ int spmi_command_sleep(struct spmi_device *sdev);
 int spmi_command_wakeup(struct spmi_device *sdev);
 int spmi_command_shutdown(struct spmi_device *sdev);
 
+//Manually added from 3.4
+#define spmi_for_each_container_dev(res, spmi_dev)			      \
+	for (res = ((spmi_dev)->dev_node ? &(spmi_dev)->dev_node[0] : NULL);  \
+	     (res - (spmi_dev)->dev_node) < (spmi_dev)->num_dev_node; res++)
+
+extern struct resource *spmi_get_resource(struct spmi_device *dev,
+				      struct spmi_resource *node,
+				      unsigned int type, unsigned int res_num);
+
+struct resource *spmi_get_resource_byname(struct spmi_device *dev,
+					  struct spmi_resource *node,
+					  unsigned int type,
+					  const char *name);
+
+extern int spmi_get_irq(struct spmi_device *dev, struct spmi_resource *node,
+						 unsigned int res_num);
+
+extern int spmi_get_irq_byname(struct spmi_device *dev,
+			       struct spmi_resource *node, const char *name);
+
 #endif

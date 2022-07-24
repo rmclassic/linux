@@ -36,6 +36,11 @@ struct thermal_cooling_device;
 struct thermal_instance;
 struct thermal_attr;
 
+enum thermal_trip_activation_mode {
+	THERMAL_TRIP_ACTIVATION_DISABLED = 0,
+	THERMAL_TRIP_ACTIVATION_ENABLED,
+};
+
 enum thermal_trend {
 	THERMAL_TREND_STABLE, /* temperature is stable */
 	THERMAL_TREND_RAISING, /* temperature is raising */
