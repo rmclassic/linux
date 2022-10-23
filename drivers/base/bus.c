@@ -836,6 +836,7 @@ int bus_register(struct bus_type *bus)
 	if (retval)
 		goto bus_groups_fail;
 
+	pr_warn("bus: '%s': registered\n", bus->name);
 	pr_debug("bus: '%s': registered\n", bus->name);
 	return 0;
 

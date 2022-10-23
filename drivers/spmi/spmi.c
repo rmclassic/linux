@@ -412,6 +412,8 @@ static int spmi_drv_probe(struct device *dev)
 	struct spmi_device *sdev = to_spmi_device(dev);
 	int err;
 
+	pr_warn("PROBE SPMI\n");
+
 	pm_runtime_get_noresume(dev);
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);
@@ -419,6 +421,8 @@ static int spmi_drv_probe(struct device *dev)
 	err = sdrv->probe(sdev);
 	if (err)
 		goto fail_probe;
+
+	pr_warn("PROBE SPMI end\n");
 
 	return 0;
 
@@ -672,16 +676,18 @@ module_exit(spmi_exit);
 static int __init spmi_init(void)
 {
 	int ret;
-
+	pr_warn("SPMI INIT\n");
 	ret = bus_register(&spmi_bus_type);
 	if (ret)
 		return ret;
 
 	is_registered = true;
+
+	pr_warn("SPMI INIT end\n");
 	return 0;
 }
-postcore_initcall(spmi_init);
-
+//postcore_initcall(spmi_init);
+module_init(spmi_init);
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("SPMI module");
 MODULE_ALIAS("platform:spmi");

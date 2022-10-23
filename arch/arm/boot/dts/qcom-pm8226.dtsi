@@ -4,6 +4,11 @@
 #include <dt-bindings/iio/qcom,spmi-vadc.h>
 
 &spmi_bus {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	interrupt-controller;
+	#interrupt-cells = <3>;
+
 	pm8226_0: pm8226@0 {
 		compatible = "qcom,pm8226", "qcom,spmi-pmic";
 		reg = <0x0 SPMI_USID>;
